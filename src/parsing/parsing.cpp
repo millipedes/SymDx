@@ -133,12 +133,10 @@ auto parse_precedence_2_expr(const char * input, Expr& expr) -> const char * {
   const char * maybe_boolean_expr;
   Exprs child(1);
     if (expression) {
-      while (true) {
-        if (maybe_boolean_expr = parse_word(parse_ws(expression), "**")) {
-          expression = make_binary_tree(parse_ws(maybe_boolean_expr), expr, child,
-              OpType::BinPow, parse_precedence_2_expr);
-        } else return expression;
-      }
+      if (maybe_boolean_expr = parse_word(parse_ws(expression), "**")) {
+        return make_binary_tree(parse_ws(maybe_boolean_expr), expr, child,
+            OpType::BinPow, parse_precedence_2_expr);
+      } else return expression;
     } else return NULL;
 }
 
@@ -147,35 +145,31 @@ auto parse_precedence_3_expr(const char * input, Expr& expr) -> const char * {
   const char * maybe_term;
   Exprs child(1);
   if (factor) {
-    while (true) {
-      if (!(maybe_term = parse_word(parse_ws(factor), "**"))
-          && (maybe_term = parse_word(parse_ws(factor), "*"))) {
-        factor = make_binary_tree(parse_ws(maybe_term), expr, child,
-            OpType::BinMult, parse_precedence_3_expr);
-      } else if (maybe_term = parse_word(parse_ws(factor), "/")) {
-        factor = make_binary_tree(parse_ws(maybe_term), expr, child,
-            OpType::BinDivide, parse_precedence_3_expr);
-      } else return factor;
-    }
+    if (!(maybe_term = parse_word(parse_ws(factor), "**"))
+        && (maybe_term = parse_word(parse_ws(factor), "*"))) {
+      return make_binary_tree(parse_ws(maybe_term), expr, child,
+          OpType::BinMult, parse_precedence_3_expr);
+    } else if (maybe_term = parse_word(parse_ws(factor), "/")) {
+      return make_binary_tree(parse_ws(maybe_term), expr, child,
+          OpType::BinDivide, parse_precedence_3_expr);
+    } else return factor;
   } else return NULL;
 }
 
 auto parse_precedence_4_expr(const char * input, Expr& expr) -> const char * {
+  std::cout << input << std::endl;
+      std::cout << "==================" << std::endl;
   const char * term = parse_precedence_3_expr(parse_ws(input), expr);
   const char * maybe_expression;
   Exprs child(1);
   if (term) {
-    while (true) {
-      if (maybe_expression = parse_word(parse_ws(term), "+")) {
-        term = make_binary_tree(parse_ws(maybe_expression), expr, child,
-            OpType::BinPlus, parse_precedence_4_expr);
-      } else if (maybe_expression = parse_word(parse_ws(term), "-")) {
-        term = make_binary_tree(parse_ws(maybe_expression), expr, child,
-            OpType::BinMinus, parse_precedence_4_expr);
-      } else {
-        return term;
-      }
-    }
+    if (maybe_expression = parse_word(parse_ws(term), "+")) {
+      return make_binary_tree(parse_ws(maybe_expression), expr, child,
+          OpType::BinPlus, parse_precedence_4_expr);
+    } else if (maybe_expression = parse_word(parse_ws(term), "-")) {
+      return make_binary_tree(parse_ws(maybe_expression), expr, child,
+          OpType::BinMinus, parse_precedence_4_expr);
+    } else return term;
   } else return NULL;
 }
 

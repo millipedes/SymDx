@@ -89,6 +89,8 @@ TEST(parsing, precedence_2_test_1) {
   result_child_two.add_children(0.1, 2.);
   auto result = slcp::Expr(slcp::OpType::BinPow);
   result.add_children(result_child_one, result_child_two);
+  expr.debug_expr();
+  result.debug_expr();
   test_expr(expr, result);
 }
 
